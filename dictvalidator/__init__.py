@@ -73,9 +73,18 @@ class DictValidator(object):
 
             # Run custom validators
             for validator in field.get('validators', []):
-                if not validator(value, data):
+                if not validator(value, self.data):
+
+                    # Default error
+                    error = 'Entered invalid ' + field_name + '.' if field.get('error_msg') is None else field['error_msg']
+                    # Set error from validator's attribute if available
+                    if str(type(validator)) != "<type 'function'>" \
+                        and str(type(validator)) != "<class 'function'>" \
+                        and validator.error is not None:
+                        error = validator.error
+
                     is_valid = False
-                    errors[key] = 'Entered invalid ' + field_name + '.' if field.get('error_msg') is None else field['error_msg']
+                    errors[key] = error
 
         # Search for undescribed fields - we don't trust requests with unexpected data
         for key in data.keys():
