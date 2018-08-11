@@ -64,9 +64,8 @@ class DictValidator(object):
                 continue
 
             # Validate against regex
-            # TODO: validate type 'str' first
             regex = field.get('regex')
-            if hasattr(value, "decode") and regex is not None:
+            if regex is not None and (type(value) == str or hasattr(value, "decode")):
                 if regex.match(value) is None:
                     is_valid = False
                     errors[key] = 'Entered invalid ' + field_name + '.' if field.get('error_msg') is None else field['error_msg']
